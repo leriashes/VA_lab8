@@ -57,6 +57,24 @@ def RungeKutta(funcy, funcz, yn, zn, h):
     return result
 
 
+#метод Рунге для поиска автоматического шага
+def Runge(funcy, funcz, yn, zn, h, eps):
+    ready = False
+
+    while not ready:
+        res1 = RungeKutta(funcy, funcz, yn, zn, 2 * h)
+
+        res2 = RungeKutta(funcy, funcz, yn, zn, h)
+        res2 = RungeKutta(funcy, funcz, res2[0], res2[1], h)
+
+        if abs(res1[0] - res2[0]) / 15 <= eps and abs(res1[1] - res2[1]) / 15 <= eps:
+            ready = True
+        else:
+            h /= 2
+
+    return h
+
+
 while True:
     while True:
         print('1 - с постоянным шагом\n2 - с автоматическим шагом\n\nВыберите режим работы программы: ', end='')
@@ -103,6 +121,18 @@ while True:
 
             if h <= b - a:
                 break
+    else:
+        while True:
+            print('Введите eps = ', end='')
+            eps = float(input())
+            print('\n')
+
+            if eps > 0:
+                break
+
+        h = Runge(funcy, funcz, y0, z0, 1, eps)
+        print('Автоматический шаг h = ', h)
+
 
     print('Введите аналитическое решение системы: \ny = ', end='')
     fy = input()
@@ -143,15 +173,6 @@ while True:
     plt.ylabel(r'$y$', fontsize=14)
 
     plt.show()
-
-
-    while True:
-        print('Введите допустимую относительную погрешность: eps = ', end='')
-        eps = float(input())
-        print('\n')
-
-        if eps > 0:
-            break
 
     
     print('\n\nЧтобы продолжить нажмите Enter. Для выхода из программы нажмите любую другую клавишу. ', end='\n')
