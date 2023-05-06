@@ -134,31 +134,30 @@ while True:
 
     result = [y0, z0]
 
-    xs = [a]
+    xs = []
     ys = [y0]
     zs = [z0]
 
-    ya = [y0]
-    za = [z0]
+    ya = []
+    za = []
 
     x = a
     i = 0
     normay = 0
     normaz = 0
     while (x < b):
-        print('x[', i, '] = ', str(x).ljust(20, ' '), sep='', end=' ')
+        xs.append(x)
+        ya.append(eval(fy))
+        za.append(eval(fz))
+
+        #print('x[', i, '] = ', str(x).ljust(20, ' '), sep='', end=' ')
         result = RungeKutta(funcy, funcz, result[0], result[1], h)
         ys.append(result[0])
         zs.append(result[1])
         x += h
-        i += 1
-        xs.append(x)
-        
-        print('y[', i, '] = ', str(result[0]).ljust(20, ' '), sep='', end=' ')
-        print('z[', i, '] = ', result[1], sep='')
 
-        ya.append(eval(fy))
-        za.append(eval(fz))
+        if (x > 5.5):
+            x = x
 
         if variant == 1:
             delta = abs(ya[i] - ys[i])
@@ -169,6 +168,22 @@ while True:
             if delta > normaz:
                 normaz = delta
 
+        i += 1
+        
+    #result = RungeKutta(funcy, funcz, result[0], result[1], b - xs[i - 1])
+    #ys[i - 1] = result[0]
+    #zs[i - 1] = result[1]
+
+    x = b
+    xs.append(x)
+    ya.append(eval(fy))
+    za.append(eval(fz))
+        
+        #print('y[', i, '] = ', str(result[0]).ljust(20, ' '), sep='', end=' ')
+        #print('z[', i, '] = ', result[1], sep='')
+
+        
+
 
     if variant == 1:
         print('Норма уклонения от точного решения для y:', normay)
@@ -177,13 +192,13 @@ while True:
     plt.plot(xs, ya, 'g')
     plt.plot(xs, za, 'b')
     
-    plt.plot(xs, ys, 'r')
-    plt.plot(xs, zs, 'purple')
+    plt.plot(xs, ys, 'r', label=r'y(x)')
+    plt.plot(xs, zs, 'purple', label=r'z(x)')
     plt.grid(True)
 
     plt.xlabel(r'$x$', fontsize=14)
     plt.ylabel(r'$y$', fontsize=14)
-
+    plt.legend(loc='best', fontsize=12)
     plt.show()
 
     
