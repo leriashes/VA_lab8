@@ -7,52 +7,43 @@ def RungeKutta(funcy, funcz, yn, zn, h):
     y = yn
     z = zn
 
-    print('\nРУНГЕ-КУТТА')
-
     k1 = h * eval(funcy)
-    print('k1 = ', k1)
+    #print('k1 =', k1, end=' ')
 
     m1 = h * eval(funcz)
-    print('m1 = ', m1)
+    #print('m1 =', m1)
 
 
     y += k1/2
     z += m1/2
 
     k2 = h * eval(funcy)
-    print('k2 = ', k2)
+    #print('k2 =', k2, end=' ')
 
     m2 = h * eval(funcz)
-    print('m2 = ', m2)
+    #print('m2 =', m2)
 
 
     y = yn + k2/2
     z = zn + m2/2
 
     k3 = h * eval(funcy)
-    print('k3 = ', k3)
+    #print('k3 =', k3, end=' ')
 
     m3 = h * eval(funcz)
-    print('m3 = ', m3)
+    #print('m3 =', m3)
 
 
     y = yn + k3
     z = zn + m3
 
     k4 = h * eval(funcy)
-    print('k4 = ', k4)
+    #print('k4 =', k4, end=' ')
 
     m4 = h * eval(funcz)
-    print('m4 = ', m4)
+    #print('m4 =', m4)
 
     result = [yn + (k1 + 2 * (k2 + k3) + k4) / 6, zn + (m1 + 2 * (m2 + m3) + m4) / 6]
-
-    print('\n')
-    print('y(n+1) = ', result[0])
-    print('z(n+1) = ', result[1])
-
-    print('\n')
-    print('\n')
 
     return result
 
@@ -151,16 +142,37 @@ while True:
     za = [z0]
 
     x = a
+    i = 0
+    normay = 0
+    normaz = 0
     while (x < b):
-        print('x = ', x)
+        print('x[', i, '] = ', str(x).ljust(20, ' '), sep='', end=' ')
         result = RungeKutta(funcy, funcz, result[0], result[1], h)
         ys.append(result[0])
         zs.append(result[1])
         x += h
+        i += 1
         xs.append(x)
+        
+        print('y[', i, '] = ', str(result[0]).ljust(20, ' '), sep='', end=' ')
+        print('z[', i, '] = ', result[1], sep='')
 
         ya.append(eval(fy))
         za.append(eval(fz))
+
+        if variant == 1:
+            delta = abs(ya[i] - ys[i])
+            if delta > normay:
+                normay = delta
+
+            delta = abs(za[i] - zs[i])
+            if delta > normaz:
+                normaz = delta
+
+
+    if variant == 1:
+        print('Норма уклонения от точного решения для y:', normay)
+        print('Норма уклонения от точного решения для z:', normaz)
 
     plt.plot(xs, ya, 'g')
     plt.plot(xs, za, 'b')
