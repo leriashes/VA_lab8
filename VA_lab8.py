@@ -145,47 +145,52 @@ while True:
     i = 0
     normay = 0
     normaz = 0
-    while (x < b):
+
+    with open('result.csv', 'w') as file:
+        file.write('i;x;y(x);z(x)\n')
+        while (x < b):
+            xs.append(x)
+            ya.append(eval(fy))
+            za.append(eval(fz))
+
+            file.write(str(i) + ';\'' + str(x) + ';\'' + str(ys[i]) + ';\'' + str(zs[i]) + '\n')
+            result = RungeKutta(funcy, funcz, result[0], result[1], h)
+            ys.append(result[0])
+            zs.append(result[1])
+            x += h
+
+            if (x > 5.5):
+                x = x
+
+            if variant == 1:
+                delta = abs(ya[i] - ys[i])
+                if delta > normay:
+                    normay = delta
+
+                delta = abs(za[i] - zs[i])
+                if delta > normaz:
+                    normaz = delta
+
+            i += 1
+
+        x = b
         xs.append(x)
+
+        file.write(str(i) + ';\'' + str(x) + ';\'' + str(ys[i]) + ';\'' + str(zs[i]) + '\n')
+
         ya.append(eval(fy))
         za.append(eval(fz))
 
-        #print('x[', i, '] = ', str(x).ljust(20, ' '), sep='', end=' ')
-        result = RungeKutta(funcy, funcz, result[0], result[1], h)
-        ys.append(result[0])
-        zs.append(result[1])
-        x += h
-
-        if (x > 5.5):
-            x = x
-
-        if variant == 1:
-            delta = abs(ya[i] - ys[i])
-            if delta > normay:
-                normay = delta
-
-            delta = abs(za[i] - zs[i])
-            if delta > normaz:
-                normaz = delta
-
-        i += 1
-        
-    #result = RungeKutta(funcy, funcz, result[0], result[1], b - xs[i - 1])
-    #ys[i - 1] = result[0]
-    #zs[i - 1] = result[1]
-
-    x = b
-    xs.append(x)
-    ya.append(eval(fy))
-    za.append(eval(fz))
-        
-        #print('y[', i, '] = ', str(result[0]).ljust(20, ' '), sep='', end=' ')
-        #print('z[', i, '] = ', result[1], sep='')
-
-        
-
-
     if variant == 1:
+        delta = abs(ya[i] - ys[i])
+        if delta > normay:
+            normay = delta
+
+        delta = abs(za[i] - zs[i])
+        if delta > normaz:
+            normaz = delta
+                
+
         print('Норма уклонения от точного решения для y:', normay)
         print('Норма уклонения от точного решения для z:', normaz)
 
@@ -201,7 +206,84 @@ while True:
     plt.legend(loc='best', fontsize=12)
     plt.show()
 
+    while True:
+        print('Запустить исследование зависимости от шага итегрирования для нормы отклонения?\ny - да \nn - нет')
+        cont = getch.getch()
+   
+        if cont == b'y':
+            nz = []
+            ny = []
+            hs = []
+
+            h = 1
+            for i in range(16):
+                hs.append(h)
+
+                result = [y0, z0]
+                xs = []
+                ys = [y0]
+                zs = [z0]
+
+                ya = []
+                za = []
+
+                x = a
+                j = 0
+                normay = 0
+                normaz = 0
+
+                while (x < b):
+                    xs.append(x)
+                    ya.append(eval(fy))
+                    za.append(eval(fz))
+                    
+                    result = RungeKutta(funcy, funcz, result[0], result[1], h)
+                    ys.append(result[0])
+                    zs.append(result[1])
+                    x += h
+                    
+                    delta = abs(ya[j] - ys[j])
+                    if delta > normay:
+                        normay = delta
+
+                    delta = abs(za[j] - zs[j])
+                    if delta > normaz:
+                        normaz = delta
+
+                    j += 1
+
+                x = b
+                xs.append(x)
+               
+                ya.append(eval(fy))
+                za.append(eval(fz))
+
+                delta = abs(ya[j] - ys[j])
+                if delta > normay:
+                    normay = delta
+
+                delta = abs(za[j] - zs[j])
+                if delta > normaz:
+                    normaz = delta
+
+                ny.append(normay)
+                nz.append(normaz)
+                h /= 2
+
+            plt.plot(hs, ny, 'g')
+            plt.plot(hs, nz, 'b')
     
+            plt.grid(True)
+
+            plt.xlabel(r'$Шаг$', fontsize=14)
+            plt.ylabel(r'$Норма отклонения$', fontsize=14)
+            plt.legend(loc='best', fontsize=12)
+            plt.show()
+            break
+        elif cont == b'n':
+            break
+
+
     print('\n\nЧтобы продолжить нажмите Enter. Для выхода из программы нажмите любую другую клавишу. ', end='\n')
     cont = getch.getch()
    
